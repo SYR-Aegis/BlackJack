@@ -17,7 +17,7 @@ class judge:
     def init_card_list(self):
         for i in range(1,10):
             self.card_dic[i] = 4
-        self.card_dic[10] = 16
+        self.card_dic[10] = 1
         # Card have four picture 
         # In this Case, Picture of Card do not influence Game
         # What we need is only number of card remains
@@ -32,22 +32,21 @@ class judge:
         # initalize dealer_case
 
         self.tmp_card_dic=copy.copy(self.card_dic)
-        print(self.tmp_card_dic)
         self.dealer_case_find(1,self.tmp_card_dic,self.dealer_card,self.total_card,False)
         # initial my card total num
 
 
         #######  Debugging Logic ##########
-        sum=0
-        for i in self.dealer_probabilty.keys():
-            sum += self.dealer_probabilty[i]
-        for i in self.dealer_probabilty.keys():
-            print("{} : {}".format(i,self.dealer_probabilty[i]/sum))
+        # sum=0
+        # for i in self.dealer_probabilty.keys():
+        #     sum += self.dealer_probabilty[i]
+        # for i in self.dealer_probabilty.keys():
+        #     print("{} : {}".format(i,self.dealer_probabilty[i]/sum))
 
         ###### Debugging Logic #############
 
         ##Check Win Rate
-        self.hit_rate={}
+        print(self.hit_win_rate(self.total_num,self.card_dic,self.total_card))
         
     def stay_win_rate(self):
         rate=0
@@ -57,7 +56,30 @@ class judge:
                 rate +=self.dealer_probabilty[dealer_total]
             elif self.total_num > dealer_total:
                 rate +=self.dealer_probabilty[dealer_total]
+        return rate 
 
+    def hit_win_rate(self,total,card_dic,card_num):
+        burst_rate = 0
+        win_rate = 0
+        loose_rate =0 
+        for card in card_dic.keys():
+            sum = total + card
+            prob = card_dic[card]/card_num
+            total_prob = 0
+            if card == 1:
+                sum +=10
+            if sum > self.burst_num:
+                if card == 1:
+                    sum -=10
+                burst_rate += prob
+            else:
+                for i in range(1,sum):
+                    total_prob += self.dealer_probabilty[i]
+                win_rate += prob * total_prob
+                win_rate += prob * self.dealer_probabilty[0]
+        loose_rate = (1 -burst_rate) - win_rate
+
+        return (1- burst_rate)*(4*win_rate + 2*(loose_rate* win_rate))
 
     def dealer_case_find(self,prob,card_dic,total,card_num,ace_check):
         if total > self.burst_num:
