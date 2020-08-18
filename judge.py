@@ -1,0 +1,135 @@
+import copy
+
+class judge:
+    def __init__(self):
+        self.card_dic = {}
+        self.init_card_list()
+        # initialize card list 
+        self.my_card = []
+        self.dealer_card = 0
+        self.total_num = 0
+        self.judgement_in_betting = False
+        self.burst_num=22
+        # If judgemnet in betting is False 
+        #     False => no betting
+        # not False => betting Rate
+        # Total num is Sum of Card What i have
+    def init_card_list(self):
+        for i in range(1,10):
+            self.card_dic[i] = 4
+        self.card_dic[10] = 12
+        # Card have four picture 
+        # In this Case, Picture of Card do not influence Game
+        # What we need is only number of card remains
+
+    def judge(self):
+        self.dealer_case = {}
+        self.dealer_probabilty={}
+        for i in range(22):
+            self.dealer_case[i]=0
+            self.dealer_probabilty[i]=0
+        # initalize dealer_case
+
+        self.tmp_card_dic=copy.copy(self.card_dic)
+        # initial my card total num
+
+            
+        self.dealer_case_find(self.dealer_card,1,False)
+        # Checking Dealer Case
+        
+        print(self.dealer_case)
+
+    def find_win_rate(self):
+        
+        total_dealer_case = 0
+        for i in self.dealer_case.keys():
+            total_dealer_case += self.dealer_case[i]
+        for i in self.dealer_case.keys():
+            self.dealer_probabilty[i] = self.dealer_case[i]/total_dealer_case
+        
+
+    def dealer_case_find(self,total,num,ace_check):
+        if total > 21:
+            if ace_check == True:
+                total -=10
+                ace_check=False
+                self.dealer_case_find(total,num,ace_check)
+            else:
+                self.dealer_case[0] += num
+            return 0
+        elif total > 16:
+            self.dealer_case[total] += num
+            return 0
+        else:
+            for i in range(1,11):
+                if self.tmp_card_dic[i] > 0:
+                    if i == 1:
+                        ace_check = True
+                        total += 10
+                    num = num * self.tmp_card_dic[i]
+                    self.tmp_card_dic[i] -=1
+                    total = total + i
+                    self.dealer_case_find(total,num,ace_check)
+        
+    
+
+
+
+
+    def input(self,my_card_first,my_card_second,dealer_card):
+        self.my_card.append(my_card_first)
+        self.my_card.append(my_card_second)
+        self.total_num= my_card_first+ my_card_second
+        # total_num _ plus
+        for card in self.my_card:
+            self.card_dic[card] -=1
+        # pop my card in my card dic
+
+        self.dealer_card = dealer_card
+        # Input is only open Card
+        self.card_dic[dealer_card] -=1
+        # pop dealer card in my card dic
+
+
+    def output(self):
+
+        return self.judgement_in_betting
+        # Return Betting Rate
+
+    def end_game(self,dealer_card_hid):
+
+
+        for card in dealer_card_hid:
+            self.card_dic[card] -=1
+        # pop hidden dealer card in my card dic
+
+        self.my_card=[]
+        self.judgement_in_betting = False
+        self.total_num=0
+        # Reinitialize mycard list for next use
+
+
+
+        # 할 수 있는 결과
+        # Hit => 카드 한장 더 받기
+        # Double => 카드를 한장만 더 받는 조건으로 배팅 2배
+        # Stay => 멈추기
+
+        # Stay => 종료
+        # Double => 카드를 한장 더 받고 종료
+        # Hit => 카드를 Stay 할 때 까지 받음
+
+        # 처음 입력(self.input() )을 통해 카드 두장과 딜러카드 한장을 입력을 받고
+        # 판단 => Hit , Double, Stay => self.output()
+        # Double => 카드 하나 더 입력 => End
+        # Stay => 종료 => 딜러 카드 확인 => End
+        # Hit => 카드 하나 더 입력, Stay,Hit 판단
+        # Double 처음 판단이 Double이 아니라면 Stay까지 카드를 받음
+        
+        # input 
+        # 카드를 빼준다(카드를 이미 봤으니 숨겨진 카드에는 없다고 생각)
+        #
+
+        ## judge
+        # 처음 카드를 받고
+        # 내가 Burst 나도 0, 딜러한테 져도 0 
