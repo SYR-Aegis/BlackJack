@@ -6,7 +6,7 @@ class judge:
         self.init_card_list()
         # initialize card list 
         self.my_card = []
-        self.dealer_card = 0
+        self.dealer_card =6
         self.total_num = 0
         self.judgement_in_betting = False
         self.burst_num=22
@@ -17,64 +17,64 @@ class judge:
     def init_card_list(self):
         for i in range(1,10):
             self.card_dic[i] = 4
-        self.card_dic[10] = 12
+        self.card_dic[10] = 16
         # Card have four picture 
         # In this Case, Picture of Card do not influence Game
         # What we need is only number of card remains
 
     def judge(self):
-        self.dealer_case = {}
         self.dealer_probabilty={}
+        self.total_card = 0
         for i in range(22):
-            self.dealer_case[i]=0
             self.dealer_probabilty[i]=0
+            if i in self.card_dic.keys():
+                self.total_card += self.card_dic[i]
         # initalize dealer_case
 
         self.tmp_card_dic=copy.copy(self.card_dic)
+        print(self.tmp_card_dic)
+        self.dealer_case_find(1,self.tmp_card_dic,self.dealer_card,self.total_card,False)
         # initial my card total num
+        sum=0
+        for i in self.dealer_probabilty.keys():
+            sum += self.dealer_probabilty[i]
+        for i in self.dealer_probabilty.keys():
+            print("{} : {}".format(i,self.dealer_probabilty[i]/sum))
 
-            
-        self.dealer_case_find(self.dealer_card,1,False)
-        # Checking Dealer Case
-        
-        print(self.dealer_case)
-
-    def find_win_rate(self):
-        
-        total_dealer_case = 0
-        for i in self.dealer_case.keys():
-            total_dealer_case += self.dealer_case[i]
-        for i in self.dealer_case.keys():
-            self.dealer_probabilty[i] = self.dealer_case[i]/total_dealer_case
-        
-
-    def dealer_case_find(self,total,num,ace_check):
+    def dealer_case_find(self,prob,card_dic,total,card_num,ace_check):
         if total > 21:
+            # Burst
             if ace_check == True:
                 total -=10
-                ace_check=False
-                self.dealer_case_find(total,num,ace_check)
+                ace_check = False
+
+                tmp_dic=copy.copy(card_dic)
+                self.dealer_case_find(prob,tmp_dic,total,card_num,ace_check)
             else:
-                self.dealer_case[0] += num
-            return 0
-        elif total > 16:
-            self.dealer_case[total] += num
-            return 0
-        else:
-            for i in range(1,11):
-                if self.tmp_card_dic[i] > 0:
-                    if i == 1:
-                        ace_check = True
-                        total += 10
-                    num = num * self.tmp_card_dic[i]
-                    self.tmp_card_dic[i] -=1
-                    total = total + i
-                    self.dealer_case_find(total,num,ace_check)
+                self.dealer_probabilty[0] += prob
+        elif total >16:
+            self.dealer_probabilty[total] += prob
         
-    
+        else:
+            card_num -= 1
 
+            for i in card_dic.keys():
+                tmp_dic=copy.copy(card_dic)
+                tmp_ace_check=ace_check
+                tmp_total=total
+                tmp_prob = prob
+                tmp_card_num = card_num
+                if tmp_dic[i]>0:
+                    if i ==1:
+                        tmp_ace_check = True
+                        tmp_total += 10
+                        
+                    tmp_prob *= (tmp_dic[i]/tmp_card_num)
+                    tmp_dic[i] -= 1
+                    tmp_total += i
+                    self.dealer_case_find(tmp_prob,tmp_dic,tmp_total,tmp_card_num,tmp_ace_check)
 
-
+                    
 
     def input(self,my_card_first,my_card_second,dealer_card):
         self.my_card.append(my_card_first)
