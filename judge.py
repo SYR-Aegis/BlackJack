@@ -9,7 +9,7 @@ class judge:
         self.dealer_card =6
         self.total_num = 0
         self.judgement_in_betting = False
-        self.burst_num=22
+        self.burst_num=21
         # If judgemnet in betting is False 
         #     False => no betting
         # not False => betting Rate
@@ -35,14 +35,32 @@ class judge:
         print(self.tmp_card_dic)
         self.dealer_case_find(1,self.tmp_card_dic,self.dealer_card,self.total_card,False)
         # initial my card total num
+
+
+        #######  Debugging Logic ##########
         sum=0
         for i in self.dealer_probabilty.keys():
             sum += self.dealer_probabilty[i]
         for i in self.dealer_probabilty.keys():
             print("{} : {}".format(i,self.dealer_probabilty[i]/sum))
 
+        ###### Debugging Logic #############
+
+        ##Check Win Rate
+        self.hit_rate={}
+        
+    def stay_win_rate(self):
+        rate=0
+        for dealer_total in self.dealer_probabilty():
+            if dealer_total == 0:
+                # Dealer Bust
+                rate +=self.dealer_probabilty[dealer_total]
+            elif self.total_num > dealer_total:
+                rate +=self.dealer_probabilty[dealer_total]
+
+
     def dealer_case_find(self,prob,card_dic,total,card_num,ace_check):
-        if total > 21:
+        if total > self.burst_num:
             # Burst
             if ace_check == True:
                 total -=10
@@ -57,7 +75,7 @@ class judge:
         
         else:
             card_num -= 1
-
+            # Draw one Card More
             for i in card_dic.keys():
                 tmp_dic=copy.copy(card_dic)
                 tmp_ace_check=ace_check
