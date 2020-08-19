@@ -1,0 +1,27 @@
+# compile tensorflow object detection API
+# from models/research
+bin/protoc object_detection/protos/*.proto --python_out=.
+
+-----------------------------------------------------------------------------------
+
+# learning
+# from models/research
+
+# path to project config file
+PIPELINE_CONFIG_PATH=/home/robot/eddie/BlackJack/blackjack.config
+
+# path where .ckpt files exist
+MODEL_DIR=/home/robot/eddie/BlackJack/training_checkpoint
+
+# number of training
+NUM_TRAIN_STEPS=10000
+
+# Integer representing how often an eval example
+  should be sampled. If 1, will sample all examples.
+SAMPLE_1_OF_N_EVAL_EXAMPLES=1
+
+# start training
+python3 object_detection/model_main.py --pipeline_config_path=${PIPELINE_CONFIG_PATH}     --model_dir=${MODEL_DIR}     --num_train_steps=${NUM_TRAIN_STEPS}     --sample_1_of_n_eval_examples=$SAMPLE_1_OF_N_EVAL_EXAMPLES     --alsologtostderr
+
+freeze ckpt
+python3 export_inference_graph1.py --input_type=image_tensor  --pipeline_config_path=/home/robot/eddie/BlackJack/blackjack.config --checkpoint_path=/home/robot/eddie/BlackJack/ssdv2/model.ckpt-10000 --inference_graph_path=/home/robot/eddie/BlackJack/trained_model
