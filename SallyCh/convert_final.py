@@ -5,13 +5,13 @@ import os
 path_dir = r'C:\Users\최서희\BlackJack\img'
 file_list = os.listdir(path_dir)
 file_list_xml = [file for file in file_list if file.endswith(".xml")]
+wb = openpyxl.Workbook()
+ws = wb.active
+ws.title = "Sheet1"
+ws.append(["name", "xmin", "ymin", "xmax", "ymax", "width", "height", "depth"])
 for item in file_list_xml:
-    with open(item) as f_input:
+    with open(path_dir + "\\" + item) as f_input:
         soup = BeautifulSoup(f_input, 'lxml')
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Sheet1"
-    ws.append(["name", "xmin", "ymin", "xmax", "ymax", "width", "height", "depth"])
     name = soup.find("name")
     for tag in soup.find_all("annotation"):
         ws.append(
