@@ -1,4 +1,4 @@
-## How to edit xml to csv
+## 저도 살려주세요
 
 xml 파일을 열면 filename 속성과 여러개의 object속성이 보인다.  
 object속성에는 bndbox속성이 있는데,  
